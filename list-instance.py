@@ -124,6 +124,9 @@ def main():
     # Get the worksheet
     worksheet = gc.open_by_key(SHEET_ID).sheet1
 
+    # Read the admin-openrc file and set the environment variables
+    admin_openrc('~/admin-openrc')
+
     # Get the list of instances and volumes
     instances_and_volumes = get_instances_and_volumes()
 

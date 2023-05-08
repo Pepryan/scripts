@@ -75,7 +75,7 @@ do
     retries=0
     while ! $ssh_successful && [ $retries -lt $max_retries ]
     do
-      ssh -i "$ssh_key" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=$timeout "$ssh_user@$remote_server" 'systemctl is-active node_exporter.service >/dev/null 2>&1'
+      ssh -i "$ssh_key" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o GSSAPIAuthentication=no -o ConnectTimeout=$timeout "$ssh_user@$remote_server" 'systemctl is-active node_exporter.service >/dev/null 2>&1'
       if [ $? -eq 0 ]; then
         echo "node_exporter is active on ${remote_server} (user: ${ssh_user})"
         ssh_successful=true

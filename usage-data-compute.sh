@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#for hypervisor utilization data per month usually requested by mba nisy 
-
 # Function to get hypervisor data
 get_hypervisor_data() {
   openstack hypervisor list --long -c 'Hypervisor Hostname' -c 'Host IP' -c 'vCPUs Used' -c 'vCPUs' -c 'Memory MB Used' -c 'Memory MB' -f value
@@ -51,9 +49,9 @@ done
 
 # Sort by IP, then remove the sorting key column
 echo "Dedicated Hosts:" > dedicated_hosts.txt
-sort -t, -k1,1 dedicated_hosts_temp.txt | cut -d, -f2- >> dedicated_hosts.txt
+sort -t, -k1,1 dedicated_hosts_temp.txt | cut -d, -f2-  | sed 's/^ *//' >> dedicated_hosts.txt
 echo "Shared Hosts:" > shared_hosts.txt
-sort -t, -k1,1 shared_hosts_temp.txt | cut -d, -f2- >> shared_hosts.txt
+sort -t, -k1,1 shared_hosts_temp.txt | cut -d, -f2-  | sed 's/^ *//' >> shared_hosts.txt
 
 # Display output
 cat dedicated_hosts.txt

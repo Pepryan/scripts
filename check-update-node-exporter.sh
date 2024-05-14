@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Path ke Node Exporter
-NODE_EXPORTER_PATHS=("/usr/local/bin/node_exporter" "/usr/bin/node_exporter")
+NODE_EXPORTER_PATHS=("/usr/local/bin/node_exporter" "/usr/bin/node_exporter" "/usr/local/bin/node_exporter-1.2.2.linux-amd64/node_exporter")
 NEW_NODE_EXPORTER_PATH="/home/ubuntu/node_exporter-1.6.0.linux-amd64/"
 
 # Versi Node Exporter yang ingin dipasang

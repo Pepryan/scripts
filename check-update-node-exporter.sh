@@ -54,17 +54,15 @@ update_node_exporter() {
 
             # Pindahkan file Node Exporter ke direktori yang sesuai
             if [ "$user" == "ubuntu" ]; then
-                # Pindahkan file Node Exporter ke direktori yang sesuai, dengan pengecekan apakah sudah ada direktori
-                if ssh -i ~/devops.pem -l "$user" "$ip" '[ -d /usr/local/bin/node_exporter ]'; then
-                    ssh -i ~/devops.pem -l "$user" "$ip" 'sudo mv /usr/local/bin/node_exporter /usr/local/bin/node_exporter_old'
-                fi
+                ssh -i ~/devops.pem -l "$user" "$ip" 'sudo mv /usr/local/bin/node_exporter/ /usr/local/bin/node_exporter_old_dir'
+                ssh -i ~/devops.pem -l "$user" "$ip" 'sudo mv /usr/local/bin/node_exporter /usr/local/bin/node_exporter_old'
+                ssh -i ~/devops.pem -l "$user" "$ip" 'sudo mv ~/node_exporter/ ~/node_exporter_old'
                 ssh -i ~/devops.pem -l "$user" "$ip" 'sudo mv ~/node_exporter /usr/local/bin/'
                 ssh -i ~/devops.pem -l "$user" "$ip" 'sudo mv ~/node_exporter.service /etc/systemd/system/'
             else
-                # Pindahkan file Node Exporter ke direktori yang sesuai, dengan pengecekan apakah sudah ada direktori
-                if ssh -i ~/devops.pem -l "$user" "$ip" '[ -d /usr/local/bin/node_exporter ]'; then
-                    ssh -i ~/devops.pem -l "$user" "$ip" 'sudo mv /usr/local/bin/node_exporter /usr/local/bin/node_exporter_old'
-                fi
+                ssh -i ~/devops.pem -l "$user" "$ip" 'sudo mv /usr/local/bin/node_exporter/ /usr/local/bin/node_exporter_old_dir'
+                ssh -i ~/devops.pem -l "$user" "$ip" 'sudo mv /usr/local/bin/node_exporter /usr/local/bin/node_exporter_old'
+                ssh -i ~/devops.pem -l "$user" "$ip" 'sudo mv ~/node_exporter/ ~/node_exporter_old'
                 # Jika pengguna adalah centos atau cloud-user
                 ssh -i ~/devops.pem -l "$user" "$ip" 'sudo mv -Z ~/node_exporter /usr/local/bin/'
                 ssh -i ~/devops.pem -l "$user" "$ip" 'sudo mv -Z ~/node_exporter.service /etc/systemd/system/'

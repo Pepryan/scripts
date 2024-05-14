@@ -8,7 +8,7 @@ NEW_NODE_EXPORTER_PATH="/home/ubuntu/node_exporter-1.6.0.linux-amd64/"
 NEW_NODE_EXPORTER_VERSION=1.6.0
 
 ip_file="ip.txt"
-users=(ubuntu centos cloud-user)
+users=(ubuntu cloud-user centos)
 
 # Fungsi untuk memeriksa versi Node Exporter di suatu IP dengan menggunakan pengguna tertentu
 check_node_exporter_version() {
@@ -78,12 +78,12 @@ update_node_exporter() {
 }
 
 # Fungsi untuk mengubah pengguna dan grup systemd Node Exporter di suatu IP
-change_node_exporter_user_group() {
-    local ip="$1"
-    local user="$2"
-    echo "Mengubah pengguna dan grup systemd Node Exporter menjadi root di $ip dengan pengguna $user ..."
-    ssh -i ~/devops.pem -l "$user" -o "ConnectTimeout=10" -o "GSSAPIAuthentication=no" -o "PasswordAuthentication=no" -o "StrictHostKeyChecking=no" "$ip" 'echo "node_exporter  ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/node_exporter >/dev/null'
-}
+# change_node_exporter_user_group() {
+#     local ip="$1"
+#     local user="$2"
+#     echo "Mengubah pengguna dan grup systemd Node Exporter menjadi root di $ip dengan pengguna $user ..."
+#     ssh -i ~/devops.pem -l "$user" -o "ConnectTimeout=10" -o "GSSAPIAuthentication=no" -o "PasswordAuthentication=no" -o "StrictHostKeyChecking=no" "$ip" 'echo "node_exporter  ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/node_exporter >/dev/null'
+# }
 
 # Fungsi untuk memeriksa dan melakukan tindakan yang diperlukan di setiap IP
 process_ip() {
@@ -97,11 +97,11 @@ process_ip() {
             if [ -n $version ]; then
                 echo "Versi Node Exporter di $ip dengan pengguna $user: $version"
                 update_node_exporter "$ip" "$user" $version
-                change_node_exporter_user_group "$ip" "$user"
+                # change_node_exporter_user_group "$ip" "$user"
                 break
             fi
         else
-            if [ "$user" != "cloud-user" ]; then
+            if [ "$user" != "centos" ]; then
                 continue
             else
                 echo "$ip, ISSUE: tidak bisa ssh ke instansi, pindah ke IP berikutnya"

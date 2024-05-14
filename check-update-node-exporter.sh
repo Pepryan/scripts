@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Path ke Node Exporter
-NODE_EXPORTER_PATH="/usr/local/bin/node_exporter"
+NODE_EXPORTER_PATHS=("/usr/local/bin/node_exporter" "/usr/bin/node_exporter")
 NEW_NODE_EXPORTER_PATH="/home/ubuntu/node_exporter-1.6.0.linux-amd64/"
 
 # Versi Node Exporter yang ingin dipasang
@@ -14,10 +14,17 @@ users=(ubuntu cloud-user centos)
 check_node_exporter_version() {
     local ip="$1"
     local user="$2"
-    # echo "Mengecek versi Node Exporter di $ip dengan pengguna $user ..."
     local version
-    version=$(ssh -i ~/devops.pem -l "$user" -o "ConnectTimeout=10" -o "GSSAPIAuthentication=no" -o "PasswordAuthentication=no" -o "StrictHostKeyChecking=no" "$ip" "$NODE_EXPORTER_PATH" --version 2>/dev/null | grep -oP 'version \K[^ ]+')
-    echo $version
+    for path in "${NODE_EXPORTER_PATHS[@]}"; do
+        version=$(ssh -i ~/devops.pem -l "$user" -o "ConnectTimeout=10" -o "GSSAPIAuthentication=no" -o "PasswordAuthentication=no" -o "StrictHostKeyChecking=no" "$ip" "$path" --version 2>/dev/null | grep -oP 'version \K[^ ]+')
+        if [ -n "$version" ]; then
+            echo "$version"
+            return 0
+        fi
+    done
+    echo "Not found"
+
+    # echo $version
 }
 
 # Fungsi untuk memperbarui Node Exporter jika versi di bawah 1.6
@@ -64,9 +71,11 @@ update_node_exporter() {
             # Mulai dan atur agar Node Exporter otomatis berjalan saat boot
             ssh -i ~/devops.pem -l "$user" "$ip" 'sudo systemctl start node_exporter'
             ssh -i ~/devops.pem -l "$user" "$ip" 'sudo systemctl enable node_exporter'
-            version_updated=$(ssh -i ~/devops.pem -l "$user" -o "ConnectTimeout=10" -o "GSSAPIAuthentication=no" -o "PasswordAuthentication=no" -o "StrictHostKeyChecking=no" "$ip" "$NODE_EXPORTER_PATH" --version 2>/dev/null | grep -oP 'version \K[^ ]+')
-            echo "DONE. Node exporter sudah berhasil diupdate ke versi : $version_updated"
+            
+            local version_updated=$(check_node_exporter_version "$ip" "$user")
+            echo "DONE. Node exporter sudah berhasil diupdate ke versi: $version_updated"
             return
+
         elif [ "${current_version_array[i]}" -gt "${desired_version_array[i]}" ]; then
             echo "Node Exporter sudah versi $NEW_NODE_EXPORTER_VERSION atau lebih baru di $ip dengan pengguna $user."
             return
@@ -104,7 +113,7 @@ process_ip() {
             if [ "$user" != "centos" ]; then
                 continue
             else
-                echo "$ip, ISSUE: tidak bisa ssh ke instansi, pindah ke IP berikutnya"
+                echo "$ip, ISSUE: tidak bisa ssh ke instance, pindah ke IP berikutnya"
                 break
             fi
         fi

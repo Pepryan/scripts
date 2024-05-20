@@ -2,10 +2,10 @@
 
 # Path ke Node Exporter
 NODE_EXPORTER_PATHS=("/usr/local/bin/node_exporter" "/usr/bin/node_exporter" "/usr/local/bin/node_exporter-1.2.2.linux-amd64/node_exporter")
-NEW_NODE_EXPORTER_PATH="/home/ubuntu/node_exporter-1.6.0.linux-amd64/"
+NEW_NODE_EXPORTER_PATH="/home/ubuntu/node_exporter-1.8.0.linux-amd64/"
 
 # Versi Node Exporter yang ingin dipasang
-NEW_NODE_EXPORTER_VERSION=1.6.0
+NEW_NODE_EXPORTER_VERSION=1.8.0
 
 ip_file="ip.txt"
 users=(ubuntu cloud-user centos)
@@ -79,7 +79,12 @@ update_node_exporter() {
             ssh -i ~/devops.pem -l "$user" "$ip" 'sudo systemctl enable node_exporter'
             
             local version_updated=$(check_node_exporter_version "$ip" "$user")
-            echo "DONE. Node exporter sudah berhasil diupdate ke versi: $version_updated"
+            if [ "$version_updated" == "$NEW_NODE_EXPORTER_VERSION" ]; then
+                echo "DONE. Node exporter berhasil diupdate ke versi: $version_updated"
+            else
+                echo "GAGAL. Node exporter gagal diupdate, check node exporter: $version_updated"
+            fi
+            #echo "===== Versi node exporter setelah diproses : $version_updated ====="
             return
 
         elif [ "${current_version_array[i]}" -gt "${desired_version_array[i]}" ]; then

@@ -16,7 +16,7 @@ check_node_exporter_version() {
     local user="$2"
     local version
     for path in "${NODE_EXPORTER_PATHS[@]}"; do
-        version=$(ssh -i ~/devops.pem -l "$user" -o "ConnectTimeout=10" -o "GSSAPIAuthentication=no" -o "PasswordAuthentication=no" -o "StrictHostKeyChecking=no" "$ip" "$path" --version 2>/dev/null | grep -oP 'version \K[^ ]+')
+        version=$(ssh -i ~/devops.pem -l "$user" -o "ConnectTimeout=10" -o "GSSAPIAuthentication=no" -o "PasswordAuthentication=no" -o "StrictHostKeyChecking=no" "$ip" "$path" --version 2>&1 /dev/null | grep -oP 'version \K[^ ]+')
         if [ -n "$version" ]; then
             echo "$version"
             return 0

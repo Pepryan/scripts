@@ -426,8 +426,13 @@ function update_repository() {
     sudo yum clean all > /dev/null 2>&1
     
     print_message "info" "Updating and checking repository..."
-    sudo yum repolist | grep -i "$repo_name" > /dev/null 2>&1
-    if [[ $? -eq 0 ]]; then
+    
+    # Get the actual repo name from the content (text between square brackets)
+    local repo_content=$(get_repo_content "$repo_name")
+    local actual_repo_name=$(echo "$repo_content" | grep -m 1 '^\[.*\]' | tr -d '[]')
+    
+    # Menggunakan awk untuk mencari repository tanpa memperhatikan tanda kurung siku
+    if sudo yum repolist | awk -v repo="$actual_repo_name" '$1 == repo || $1 == "["repo"]"' | grep -q .; then
         print_message "success" "Repository added successfully."
     else
         print_message "error" "FAILED to add repository, please contact Btech team."
